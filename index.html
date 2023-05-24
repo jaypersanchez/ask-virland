@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title>Semantic Search</title>
+    <script>
+    function runSemanticSearch(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if (this.readyState == 4 && this.status == 200){
+                document.getElementById("result").innerHTML =
+                this.responseText;
+            }
+        };
+        xhttp.open("GET",`http://127.0.0.1:5000/semantic?query=${document.getElementById('query').value}`, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send();
+    }
+    </script>
+</head>
+<body>
+    <h1>Semantic Search</h1>
+    <form>
+    Enter your query: 
+    <input type="text" id="query">
+    </form>
+    <button onclick="runSemanticSearch()">Execute</button>
+    <div id="result">
+         The result will be displayed here
+    </div>
+</body>
+</html>
