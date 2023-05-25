@@ -1,13 +1,12 @@
 <html>
 <head>
-    <title>Semantic Search</title>
+    <title>Ask Virland</title>
     <script>
     function runSemanticSearch(){
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
             if (this.readyState == 4 && this.status == 200){
-                document.getElementById("result").innerHTML =
-                this.responseText;
+                document.getElementById("result").innerHTML = `Hay NaKO! ${this.responseText}`;
             }
         };
         xhttp.open("GET",`http://127.0.0.1:5000/semantic?query=${document.getElementById('query').value}`, true);
@@ -17,7 +16,7 @@
     </script>
 </head>
 <body>
-    <h1>Semantic Search</h1>
+    <h1>Ask Virland</h1>
     <form>
     Enter your query: 
     <input type="text" id="query">
