@@ -2,28 +2,48 @@
 <head>
     <title>Ask Virland</title>
     <script>
-    function runSemanticSearch(){
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-            if (this.readyState == 4 && this.status == 200){
-                document.getElementById("result").innerHTML = `Hay NaKO! ${this.responseText}`;
+            function runSemanticSearch(){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                    if (this.readyState == 4 && this.status == 200){
+                        console.log(`${this.responseText}`)
+                        document.getElementById("result").innerHTML = `${this.responseText}`;
+                    }
+                };
+                xhttp.open("GET",`http://127.0.0.1:5000/semantic?query=${document.getElementById('query').value}`, true);
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.send();
             }
-        };
-        xhttp.open("GET",`http://127.0.0.1:5000/semantic?query=${document.getElementById('query').value}`, true);
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send();
-    }
     </script>
+    <style>
+        #header {
+            height: 50px;
+        }
+        #content {
+            margin-top: 10px;
+        }
+        #footer {
+            margin-top: 10px;
+        }
+        #result {
+            border:1px solid #000; 
+            width:250px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Ask Virland</h1>
-    <form>
-    Enter your query: 
-    <input type="text" id="query">
-    </form>
-    <button onclick="runSemanticSearch()">Execute</button>
-    <div id="result">
-         The result will be displayed here
+    <div id="header">
+        <img src="./img/vicon.jpeg" style="float: left; margin-right: 10px;">
+    </div>
+    <div id="content" style="margin-top: 100px">
+        <form>
+        <input type="text" id="query" placeholder="Question for Virland">
+        </form>
+        <button onclick="runSemanticSearch()">Ask Virland</button>
+        <div id="result">
+            The result will be displayed here
+        </div>
     </div>
 </body>
 </html>
