@@ -5,44 +5,127 @@
             function runSemanticSearch(){
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function(){
-                    if (this.readyState == 4 && this.status == 200){
-                        console.log(`${this.responseText}`)
-                        document.getElementById("result").innerHTML = `${this.responseText}`;
+                    if (this.readyState == 4 && this.status == 200) {
+                        // Get the comment-list element
+                        var commentList = document.getElementById("comment-list");
+                    
+                        // Clear the content of the "comment-list" unordered list
+                        if (commentList) {
+                            commentList.innerHTML = ""; // Clear the existing content
+                        }
+                    
+                        // Parse the JSON response
+                        var response = JSON.parse(this.responseText);
+                    
+                        // Get the comments from the response
+                        var comments = response.comments_matching_keywords;
+                        // Check if comments are found
+                        if (comments && comments.length > 0) {
+                            // Create a new unordered list element
+                            var ul = document.createElement("ul");
+                            ul.id = "comment-list";
+                    
+                            // Iterate through the comments and create list items
+                            comments.forEach(function(comment) {
+                                var li = document.createElement("li");
+                                li.textContent = comment;
+                                ul.appendChild(li);
+                            });
+                    
+                            // Append the new list to the "comment-list" element
+                            if (commentList) {
+                                commentList.appendChild(ul);
+                            } else {
+                                console.error("comment-list element not found");
+                            }
+                        } else {
+                            // Display a message if there are no comments
+                            if (commentList) {
+                                commentList.innerHTML = "<li>No comments matching the keywords found.</li>";
+                            } else {
+                                console.error("comment-list element not found");
+                            }
+                        }
                     }
+                    
                 };
-                xhttp.open("GET",`http://127.0.0.1:5000/semantic?query=${document.getElementById('query').value}`, true);
+                xhttp.open("GET",`http://127.0.0.1:5001/semantic?keyword=${document.getElementById('query').value}`, true);
                 xhttp.setRequestHeader("Content-type", "application/json");
                 xhttp.send();
             }
     </script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
         #header {
             height: 50px;
+            background-color: #333;
+            color: white;
+            padding: 10px;
         }
         #content {
-            margin-top: 10px;
+            margin: 20px;
+            text-align: center;
         }
-        #footer {
-            margin-top: 10px;
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
         #result {
-            border:1px solid #000; 
-            width:250px;
-            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            text-align: left;
+            background-color: #f7f7f7;
+            margin-top: 20px; 
+        }
+        #comment-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        #comment-list li {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <div id="header">
         <img src="./img/vicon.jpeg" style="float: left; margin-right: 10px;">
+        Virland - Ask Questions
     </div>
-    <div id="content" style="margin-top: 100px">
+    <div id="content">
         <form>
-        <input type="text" id="query" placeholder="Question for Virland">
+            <input type="text" id="query" placeholder="Enter your question for Virland">
         </form>
         <button onclick="runSemanticSearch()">Ask Virland</button>
         <div id="result">
-            The result will be displayed here
+            <ul id="comment-list">
+                <!-- Comments will be added here as list items -->
+            </ul>
         </div>
     </div>
 </body>
