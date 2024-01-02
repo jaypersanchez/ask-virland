@@ -110,6 +110,27 @@
             color: white;
             padding: 10px;
         }
+        #menu {
+            background-color: #333;
+        }
+        #menu ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+        #menu ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        #menu ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        #menu ul li a:hover {
+            color: #007bff;
+        }
         #content {
             margin: 20px;
             text-align: center;
@@ -142,13 +163,12 @@
             padding: 20px;
             text-align: left;
             background-color: #f7f7f7;
-            margin-top: 20px; 
+            margin-top: 20px;
         }
         #comment-list {
             list-style-type: none;
             padding: 0;
         }
-        
         #comment-list li {
             border-bottom: 1px solid #ccc;
             margin-bottom: 10px;
@@ -160,6 +180,14 @@
     <div id="header">
         <img src="./img/vicon.jpeg" style="float: left; margin-right: 10px;">
         Virland - Ask Questions
+    </div>
+    <div id="menu">
+        <ul>
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="cryptograph.html">Graph</a></li>
+            <li><a href="erc.html">ERC</a></li>
+            <li><a href="nft.html">NFT</a></li>
+        </ul>
     </div>
     <div id="content">
         <form>
