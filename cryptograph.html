@@ -81,6 +81,13 @@
             padding-bottom: 10px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/0.5.1/chartjs-adapter-moment.min.js"></script>
+    <!-- Register the ChartJsAdapterMoment -->
+    <script>
+        Chart.register(ChartJsAdapterMoment);
+    </script>
     <script>
         function fetchCryptoData() {
             // Get the selected symbol, fromDate, and toDate from the form
@@ -111,7 +118,75 @@
                     // You can process and display the data as needed
                     var cryptoDataDiv = document.getElementById("cryptoData");
                     // Assuming 'data' contains the information you want to display
-                    cryptoDataDiv.innerHTML = "Fetched Data: " + JSON.stringify(data);
+                    // Create a canvas element to render the chart
+                    var canvas = document.createElement("canvas");
+                    canvas.id = "candlestickChart";
+                    canvas.width = 800; // Set the width as needed
+                    canvas.height = 400; // Set the height as needed
+
+                    cryptoDataDiv.appendChild(canvas);
+
+                    // Process and format the data for Chart.js
+                    var chartData = {
+                        datasets: [{
+                            label: "Candlestick Chart",
+                            data: [],
+                            borderColor: 'rgb(0, 0, 0)',
+                            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                            borderWidth: 2
+                        }]
+                    };
+                    // Function to format the date as MM/DD/YYYY
+                    function formatDate(date) {
+                        var month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero to month
+                        var day = date.getDate().toString().padStart(2, '0'); // Add leading zero to day
+                        var year = date.getFullYear();
+                        return month + '/' + day + '/' + year;
+                    }
+                    // Extract and format the data from 'data' for the chart
+                    Object.keys(data.Open).forEach(function (timestamp) {
+                        var date = new Date(parseInt(timestamp));
+                        var formattedDate = formatDate(date);  //date.toLocaleDateString('en-US');
+                        console.log(formattedDate); // Log the formatted date
+                        chartData.datasets[0].data.push({
+                            t: formattedDate,
+                            o: data.Open[timestamp],
+                            h: data.High[timestamp],
+                            l: data.Low[timestamp],
+                            c: data.Close[timestamp]
+                        });
+                    });
+                    
+                    // Create the candlestick chart using Chart.js
+                    var ctx = document.getElementById('candlestickChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'candlestick',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        parser: 'MM/DD/YYYY', // Specify the date format
+                                        tooltipFormat: 'MM/DD/YYYY', 
+                                        unit: 'day'
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Date'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Price'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
                 })
         }
         
