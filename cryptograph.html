@@ -81,6 +81,41 @@
             padding-bottom: 10px;
         }
     </style>
+    <script>
+        function fetchCryptoData() {
+            // Get the selected symbol, fromDate, and toDate from the form
+            var symbol = document.getElementById("symbol").value;
+            // Get the fromDate and toDate inputs
+            var fromDateInput = document.getElementById("fromDate");
+            var toDateInput = document.getElementById("toDate");
+
+            // Get the values in MM/DD/YYYY format
+            var fromDateMMDDYYYY = fromDateInput.value;
+            var toDateMMDDYYYY = toDateInput.value;
+            console.log(`symbol=${symbol}&fromDate=${fromDateInput.value}&toDate=${toDateInput.value}`)
+            // Construct the URL with the parameters
+            var url = `http://127.0.0.1:5001/crypto/graph?symbol=${symbol}&fromDate=${fromDateInput.value}&toDate=${toDateInput.value}`;
+        
+            // Make the HTTP request
+            fetch(url)
+                .then(function(response) {
+                    if (response.status !== 200) {
+                        console.log(`Error: ${response.status}`);
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    // Handle the JSON data here
+                    console.log(data);
+                    // You can process and display the data as needed
+                    var cryptoDataDiv = document.getElementById("cryptoData");
+                    // Assuming 'data' contains the information you want to display
+                    cryptoDataDiv.innerHTML = "Fetched Data: " + JSON.stringify(data);
+                })
+        }
+        
+    </script>
 </head>
 <body>
     <div id="header">
@@ -90,7 +125,7 @@
     <div id="menu">
         <ul>
             <li><a href="index.html">Home</a></li>
-            <li><a href="#"  class="active">Graph</a></li>
+            <li><a href="#" class="active">Graph</a></li>
             <li><a href="erc.html">ERC</a></li>
             <li><a href="nft.html">NFT</a></li>
         </ul>
@@ -98,6 +133,25 @@
     <div id="content">
         <h1>Welcome to Cryptograph</h1>
         <p>This is the Cryptograph page content.</p>
+        <form id="cryptoForm">
+            <label for="symbol">Select Symbol:</label>
+            <select id="symbol" name="symbol">
+                <option value="eth">ETH (Ethereum)</option>
+                <option value="btc">BTC (Bitcoin)</option>
+            </select>
+            <br>
+            <label for="fromDate">From Date:</label>
+            <input type="date" id="fromDate" name="fromDate" required>
+            <br>
+            <label for="toDate">To Date:</label>
+            <input type="date" id="toDate" name="toDate" required>
+            <br>
+            <button type="button" onclick="fetchCryptoData()">Fetch Data</button>
+        </form>
+        <!-- Add a div to display the fetched data -->
+        <div id="cryptoData">
+            <!-- Fetched data will be displayed here -->
+        </div>
     </div>
 </body>
 </html>
