@@ -2,6 +2,9 @@
 <head>
     <title>Ask Virland</title>
     <script>
+            var currentPage = 1;
+            var commentsPerPage = 10; 
+
             function runSemanticSearch(){
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function(){
@@ -53,6 +56,47 @@
                 xhttp.setRequestHeader("Content-type", "application/json");
                 xhttp.send();
             }
+
+            // Function to display comments for the current page
+            function displayCommentsForPage() {
+                var startIndex = (currentPage - 1) * commentsPerPage;
+                var endIndex = startIndex + commentsPerPage;
+                
+                var commentList = document.getElementById("comment-list");
+                commentList.innerHTML = ""; // Clear existing content
+                
+                for (var i = startIndex; i < endIndex && i < comments.length; i++) {
+                    var li = document.createElement("li");
+                    li.textContent = comments[i];
+                    commentList.appendChild(li);
+                }
+                
+                // Update page information
+                var pageInfo = document.getElementById("page-info");
+                pageInfo.textContent = "Page " + currentPage;
+            }
+
+            // Handle next page button click
+            var nextPageButton = document.getElementById("next-page");
+            nextPageButton.addEventListener("click", function() {
+                var totalPages = Math.ceil(comments.length / commentsPerPage);
+                
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayCommentsForPage();
+                }
+            });
+
+            // Handle previous page button click
+            var prevPageButton = document.getElementById("prev-page");
+            prevPageButton.addEventListener("click", function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayCommentsForPage();
+                }
+            });
+            // Call the display function initially
+            displayCommentsForPage();
     </script>
     <style>
         body {
@@ -126,6 +170,11 @@
             <ul id="comment-list">
                 <!-- Comments will be added here as list items -->
             </ul>
+            <div id="pagination">
+                <button id="prev-page">Previous</button>
+                <span id="page-info">Page 1</span>
+                <button id="next-page">Next</button>
+            </div>   
         </div>
     </div>
 </body>
