@@ -4,193 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cryptograph</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        #header {
-            height: 50px;
-            background-color: #333;
-            color: white;
-            padding: 10px;
-        }
-        #menu {
-            background-color: #333;
-        }
-        #menu ul {
-            list-style-type: none;
-            padding: 0;
-            text-align: center;
-        }
-        #menu ul li {
-            display: inline;
-            margin-right: 20px;
-        }
-        #menu ul li a {
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        #menu ul li a:hover {
-            color: #007bff;
-        }
-        #content {
-            margin: 20px;
-            text-align: center;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #result {
-            border: 1px solid #ccc;
-            padding: 20px;
-            text-align: left;
-            background-color: #f7f7f7;
-            margin-top: 20px;
-        }
-        #comment-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        #comment-list li {
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/0.5.1/chartjs-adapter-moment.min.js"></script>
-    <!-- Register the ChartJsAdapterMoment -->
-    <script>
-        Chart.register(ChartJsAdapterMoment);
-    </script>
-    <script>
-        function fetchCryptoData() {
-            // Get the selected symbol, fromDate, and toDate from the form
-            var symbol = document.getElementById("symbol").value;
-            // Get the fromDate and toDate inputs
-            var fromDateInput = document.getElementById("fromDate");
-            var toDateInput = document.getElementById("toDate");
-
-            // Get the values in MM/DD/YYYY format
-            var fromDateMMDDYYYY = fromDateInput.value;
-            var toDateMMDDYYYY = toDateInput.value;
-            console.log(`symbol=${symbol}&fromDate=${fromDateInput.value}&toDate=${toDateInput.value}`)
-            // Construct the URL with the parameters
-            var url = `http://127.0.0.1:5001/crypto/graph?symbol=${symbol}&fromDate=${fromDateInput.value}&toDate=${toDateInput.value}`;
-        
-            // Make the HTTP request
-            fetch(url)
-                .then(function(response) {
-                    if (response.status !== 200) {
-                        console.log(`Error: ${response.status}`);
-                        return;
-                    }
-                    return response.json();
-                })
-                .then(function(data) {
-                    // Handle the JSON data here
-                    console.log(data);
-                    // You can process and display the data as needed
-                    var cryptoDataDiv = document.getElementById("cryptoData");
-                    // Assuming 'data' contains the information you want to display
-                    // Create a canvas element to render the chart
-                    var canvas = document.createElement("canvas");
-                    canvas.id = "candlestickChart";
-                    canvas.width = 800; // Set the width as needed
-                    canvas.height = 400; // Set the height as needed
-
-                    cryptoDataDiv.appendChild(canvas);
-
-                    // Process and format the data for Chart.js
-                    var chartData = {
-                        datasets: [{
-                            label: "Candlestick Chart",
-                            data: [],
-                            borderColor: 'rgb(0, 0, 0)',
-                            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                            borderWidth: 2
-                        }]
-                    };
-                    // Function to format the date as MM/DD/YYYY
-                    function formatDate(date) {
-                        var month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero to month
-                        var day = date.getDate().toString().padStart(2, '0'); // Add leading zero to day
-                        var year = date.getFullYear();
-                        return month + '/' + day + '/' + year;
-                    }
-                    // Extract and format the data from 'data' for the chart
-                    Object.keys(data.Open).forEach(function (timestamp) {
-                        var date = new Date(parseInt(timestamp));
-                        var formattedDate = formatDate(date);  //date.toLocaleDateString('en-US');
-                        console.log(formattedDate); // Log the formatted date
-                        chartData.datasets[0].data.push({
-                            t: formattedDate,
-                            o: data.Open[timestamp],
-                            h: data.High[timestamp],
-                            l: data.Low[timestamp],
-                            c: data.Close[timestamp]
-                        });
-                    });
-                    
-                    // Create the candlestick chart using Chart.js
-                    var ctx = document.getElementById('candlestickChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'candlestick',
-                        data: chartData,
-                        options: {
-                            responsive: true,
-                            scales: {
-                                x: {
-                                    type: 'time',
-                                    time: {
-                                        parser: 'MM/DD/YYYY', // Specify the date format
-                                        tooltipFormat: 'MM/DD/YYYY', 
-                                        unit: 'day'
-                                    },
-                                    title: {
-                                        display: true,
-                                        text: 'Date'
-                                    }
-                                },
-                                y: {
-                                    title: {
-                                        display: true,
-                                        text: 'Price'
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    
-                })
-        }
-        
-    </script>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <script src="main.js"></script>
 </head>
 <body>
     <div id="header">
@@ -206,13 +21,9 @@
         </ul>
     </div>
     <div id="content">
-        <h1>Welcome to Cryptograph</h1>
-        <p>This is the Cryptograph page content.</p>
         <form id="cryptoForm">
             <label for="symbol">Select Symbol:</label>
             <select id="symbol" name="symbol">
-                <option value="eth">ETH (Ethereum)</option>
-                <option value="btc">BTC (Bitcoin)</option>
             </select>
             <br>
             <label for="fromDate">From Date:</label>
@@ -221,12 +32,20 @@
             <label for="toDate">To Date:</label>
             <input type="date" id="toDate" name="toDate" required>
             <br>
-            <button type="button" onclick="fetchCryptoData()">Fetch Data</button>
+            <button type="button" onclick="fetchCryptoGraphData()">Fetch Data</button>
         </form>
         <!-- Add a div to display the fetched data -->
         <div id="cryptoData">
             <!-- Fetched data will be displayed here -->
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/0.5.1/chartjs-adapter-moment.min.js"></script>
+    <!-- Register the ChartJsAdapterMoment -->
+    <script>
+        Chart.register(ChartJsAdapterMoment);
+    </script>
+    
 </body>
 </html>
